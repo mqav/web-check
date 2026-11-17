@@ -1,0 +1,31 @@
+name: Build and deploy to Netlify
+
+on:
+  push:
+    branches:
+      - master
+  schedule:
+    - cron: '45 6 15 * *'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          repository: lissy93/web-check
+
+      - name: Install project dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Install Netlify CLI
+        run: npm install -g netlify-cli
+
+      - name: Build and deploy to Netlify
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        run: netlify deploy --build --prod
